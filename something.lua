@@ -1,26 +1,59 @@
--- Insert a pathfinding service
-local pathfindingService = game:GetService("PathfindingService")
+loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))
 
--- Define the target destination
-local targetPosition = Vector3.new(32, 219, 142)
+local PathFindingService = game:GetService("PathfindingService")
 
--- Get the player's character
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+local human = script.Parent:WaitForChild("Humanoid")
 
--- Get the humanoid of the character
-local humanoid = character:WaitForChild("Humanoid")
+local torso = script.Parent:WaitForChild("Torso")
 
--- Create a path
-local path = pathfindingService:CreatePath({
-    AgentRadius = 2, -- Set the radius of the agent
-    AgentHeight = 5, -- Set the height of the agent
-    AgentCanJump = true, -- Allow the agent to jump
-    AgentJumpHeight = 10, -- Set the jump height
-    })
 
--- Set the path's waypoints
-path:ComputeAsync(character.HumanoidRootPart.Position, targetPosition)
 
--- Move the character along the path
-path:MoveTo(targetPosition)
+local path = PathFindingService:CreatePath()  
+
+path:ComputeAsync(torso.Position, game.Workspace.EndingPart.Position)
+
+local Waypoints = path:GetWaypoints()
+
+path.Blocked:Connect(function()
+
+	
+
+end)
+
+
+
+for i, Waypoint in pairs(Waypoints) do
+
+	local part = Instance.new("Part",workspace)
+
+	part.Shape = "Ball"
+
+	part.Material = "Neon"
+
+	part.Size = Vector3.new(0.6, 0.6, 0.6)
+
+	part.Position = Waypoint.Position + Vector3.new(0, 2, 0)
+
+	part.Anchored = true
+
+	part.CanCollide = false
+
+	
+
+	if Waypoint.Action == Enum.PathWaypointAction.Jump then
+
+		human.Jump = true
+
+	end
+
+	human:MoveTo(Waypoint.Position)
+
+	
+
+	human.MoveToFinished:Wait()
+
+end
+
+
+
+human:MoveTo(game.Workspace.EndingPart.Position)
