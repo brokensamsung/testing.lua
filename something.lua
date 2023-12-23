@@ -1,48 +1,26 @@
-print("IF IT'S NOT WORKING, YOU REJOINED THE SAME SERVER")
+-- Insert a pathfinding service
+local pathfindingService = game:GetService("PathfindingService")
 
-local PathfindingService = game:GetService("PathfindingService")
-local player = game.Players.LocalPlayer
-local character = player.Character
+-- Define the target destination
 local targetPosition = Vector3.new(32, 219, 142)
 
-local maxAttempts = 10
+-- Get the player's character
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
 
-if player and character then
-    local humanoid = character:WaitForChild("Humanoid")
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+-- Get the humanoid of the character
+local humanoid = character:WaitForChild("Humanoid")
 
-    if humanoidRootPart then
-        local path = PathfindingService:CreatePath({
-            AgentRadius = 2,
-            AgentHeight = 5,
-            AgentCanJump = true,
-            AgentJumpHeight = 10,
-        })
+-- Create a path
+local path = pathfindingService:CreatePath({
+    AgentRadius = 2, -- Set the radius of the agent
+    AgentHeight = 5, -- Set the height of the agent
+    AgentCanJump = true, -- Allow the agent to jump
+    AgentJumpHeight = 10, -- Set the jump height
+    })
 
-        local pathFound = false
-        for attempt = 1, maxAttempts do
-            path:ComputeAsync(humanoidRootPart.Position, targetPosition)
-            if path.Status == Enum.PathStatus.Complete then
-                pathFound = true
-                break
-            end
-            wait(1)  -- Wait for a moment before the next attempt
-        end
+-- Set the path's waypoints
+path:ComputeAsync(character.HumanoidRootPart.Position, targetPosition)
 
-        if not pathFound then
-            print("Pathfinding failed")
-        else
-            path.PathCompleted:Connect(function()
-                print("Pathfinding completed")
-            end)
-
-            path:MoveTo(targetPosition)
-
-            humanoid.MoveToFinished:Wait()
-        end
-    else
-        warn("HumanoidRootPart not found in character.")
-    end
-else
-    warn("Player or character not found.")
-end
+-- Move the character along the path
+path:MoveTo(targetPosition)
