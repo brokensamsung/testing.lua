@@ -1,7 +1,6 @@
 print("IF IT'S NOT WORKING, YOU REJOINED THE SAME SERVER")
 
 local PathfindingService = game:GetService("PathfindingService")
-local TweenService = game:GetService("TweenService")
 local player = game.Players.LocalPlayer
 local character = player.Character
 local targetPosition = Vector3.new(32, 219, 142)
@@ -28,11 +27,7 @@ if player and character then
     end
 
     if not pathFound then
-        print("Pathfinding failed, using tweening as a fallback")
-        local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0)
-        local tween = TweenService:Create(character, tweenInfo, {Position = targetPosition})
-        tween:Play()
-        wait(1)  -- Adjust this wait time as needed
+        print("Pathfinding failed")
     else
         path.PathCompleted:Connect(function()
             print("Pathfinding completed")
@@ -45,4 +40,5 @@ if player and character then
 else
     warn("Player or character not found.")
 end
+
 
